@@ -179,7 +179,9 @@ def run_kmeans(x, nmb_clusters, verbose=False):
     # perform the training
     clus.train(x, index)
     centroids = clus.centroids
-    print(f'centrooids shape: {centroids.shape}')
+    cn_len = len(centroids)
+    print(f'centrooids len: {cn_len}')
+    print(f'centrooids : {centroids}')
     _, I = index.search(x, 1)
 
     # losses = faiss.vector_to_array(clus.obj)
