@@ -145,6 +145,7 @@ def main(args):
 
     # clustering algorithm to use
     deepcluster = clustering.__dict__[args.clustering](args.nmb_cluster)
+    print(f"deepcluster {deepcluster}")
 
     # training convnet with DeepCluster
     for epoch in range(args.start_epoch, args.epochs):
@@ -153,9 +154,12 @@ def main(args):
         # remove head
         model.top_layer = None
         print("classifier")
-        print(*list(model.classifier.children()))
         print(*list(model.classifier.children())[:-1])
-
+        print(*list(model.classifier.children()))
+        
+        # removes the last relu unit
+        # why only relu? cause model uses cross entropy loss so, last layer only outuputs the activation
+        # loss function itself calculates both softmax and NLLL 
         model.classifier = nn.Sequential(
             *list(model.classifier.children())[:-1])
 
@@ -309,20 +313,22 @@ def compute_features(dataloader, model, N):
         print('Compute features')
     batch_time = AverageMeter()
     end = time.time()
+    # enter evaluation mode
     model.eval()
     # discard the label information in the dataloader
     for i, (input_tensor, _) in enumerate(dataloader):
-        print(i)
-        print(_)
         with torch.no_grad():
             input_var = torch.autograd.Variable(input_tensor.cuda())
+            # get the features per batch
             aux = model(input_var).data.cpu().numpy()
 
             if i == 0:
+                # init the feature vector
                 features = np.zeros((N, aux.shape[1]), dtype='float32')
 
             aux = aux.astype('float32')
             if i < len(dataloader) - 1:
+                # store the features per batch
                 features[i * args.batch: (i + 1) * args.batch] = aux
             else:
                 # special treatment for final batch
@@ -332,10 +338,13 @@ def compute_features(dataloader, model, N):
             batch_time.update(time.time() - end)
             end = time.time()
 
-            if args.verbose and (i % 200) == 0:
+            if args.verbose:
                 print('{0} / {1}\t'
                       'Time: {batch_time.val:.3f} ({batch_time.avg:.3f})'
                       .format(i, len(dataloader), batch_time=batch_time))
+
+    # returns the computed images features from model
+    # this features are used for clustering
     return features
 
 

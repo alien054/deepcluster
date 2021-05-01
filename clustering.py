@@ -48,7 +48,8 @@ class ReassignedDataset(data.Dataset):
         self.transform = transform
 
     def make_dataset(self, image_indexes, pseudolabels, dataset):
-        label_to_idx = {label: idx for idx, label in enumerate(set(pseudolabels))}
+        label_to_idx = {label: idx for idx,
+                        label in enumerate(set(pseudolabels))}
         images = []
         for j, idx in enumerate(image_indexes):
             path = dataset[idx][0]
@@ -82,10 +83,10 @@ def preprocess_features(npdata, pca=256):
         np.array of dim N * pca: data PCA-reduced, whitened and L2-normalized
     """
     _, ndim = npdata.shape
-    npdata =  npdata.astype('float32')
+    npdata = npdata.astype('float32')
 
     # Apply PCA-whitening with Faiss
-    mat = faiss.PCAMatrix (ndim, pca, eigen_power=-0.5)
+    mat = faiss.PCAMatrix(ndim, pca, eigen_power=-0.5)
     mat.train(npdata)
     assert mat.is_trained
     npdata = mat.apply_py(npdata)
@@ -156,6 +157,7 @@ def run_kmeans(x, nmb_clusters, verbose=False):
         (list: ids of data in each cluster, float: loss value)
     """
     n_data, d = x.shape
+    print(f'n_data: {n_data} d: {d}')
 
     # faiss implementation of k-means
     clus = faiss.Clustering(d, nmb_clusters)
@@ -172,9 +174,12 @@ def run_kmeans(x, nmb_clusters, verbose=False):
     flat_config.useFloat16 = False
     flat_config.device = 0
     index = faiss.GpuIndexFlatL2(res, d, flat_config)
+    print(f'index {index}')
 
     # perform the training
     clus.train(x, index)
+    centroids = clus.centroids
+    print(f'centrooids shape: {centroids.shape}')
     _, I = index.search(x, 1)
 
     # losses = faiss.vector_to_array(clus.obj)
@@ -184,12 +189,10 @@ def run_kmeans(x, nmb_clusters, verbose=False):
         stats.at(i).obj for i in range(stats.size())
     ])
 
-
     if verbose:
         print('k-means loss evolution: {0}'.format(losses))
 
     return [int(n[0]) for n in I], losses[-1]
-
 
 
 def arrange_clustering(images_lists):
@@ -206,7 +209,7 @@ class Kmeans(object):
     def __init__(self, k):
         self.k = k
 
-    def cluster(self, data, verbose=False):
+    def cluster(self, data, verbose=True):
         """Performs k-means clustering.
             Args:
                 x_data (np.array N * dim): data to cluster
@@ -217,6 +220,7 @@ class Kmeans(object):
         xb = preprocess_features(data)
 
         # cluster the data
+        # run_kmeans Returns (list: ids of data in each cluster, float: loss value)
         I, loss = run_kmeans(xb, self.k, verbose)
         self.images_lists = [[] for i in range(self.k)]
         for i in range(len(data)):
