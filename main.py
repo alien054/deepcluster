@@ -20,7 +20,7 @@ import torch.optim
 import torch.utils.data
 import torchvision.transforms as transforms
 import torchvision.datasets as datasets
-
+import matplotlib as plt
 
 # import own class
 import clustering
@@ -149,7 +149,15 @@ def main(args):
                                              pin_memory=True)
 
     print("dataloader")
-    print(dataloader[0])
+    for i, batch in enumerate(dataloader, start=1):
+        image, label = batch
+        plt.subplot(10, 10, i)
+        plt.imshow(image.reshape(28, 28), cmap='gray')
+        plt.axis('off')
+        plt.title(dataloader.classes[label.item()], fontsize=28)
+        if (i >= 1):
+            break
+        plt.show()
     # clustering algorithm to use
     deepcluster = clustering.__dict__[args.clustering](args.nmb_cluster)
 
