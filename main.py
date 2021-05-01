@@ -21,6 +21,8 @@ import torch.utils.data
 import torchvision.transforms as transforms
 import torchvision.datasets as datasets
 
+
+#import own class
 import clustering
 import models
 from util import AverageMeter, Logger, UnifLabelSampler
@@ -132,6 +134,9 @@ def main(args):
     end = time.time()
     dataset = datasets.ImageFolder(
         args.data, transform=transforms.Compose(tra))
+    
+    print(f'dataset shape: {dataset.shape}')
+    
     if args.verbose:
         print('Load dataset: {0:.2f} s'.format(time.time() - end))
 
@@ -139,6 +144,7 @@ def main(args):
                                              batch_size=args.batch,
                                              num_workers=args.workers,
                                              pin_memory=True)
+    print(f'dataloader shape: {dataloader.shape}')
 
     # clustering algorithm to use
     deepcluster = clustering.__dict__[args.clustering](args.nmb_cluster)
