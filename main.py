@@ -22,7 +22,7 @@ import torchvision.transforms as transforms
 import torchvision.datasets as datasets
 
 
-#import own class
+# import own class
 import clustering
 import models
 from util import AverageMeter, Logger, UnifLabelSampler
@@ -134,9 +134,10 @@ def main(args):
     end = time.time()
     dataset = datasets.ImageFolder(
         args.data, transform=transforms.Compose(tra))
-    
-    print(f'dataset shape: {dataset.shape}')
-    
+
+    print("dataset")
+    print(dataset)
+
     if args.verbose:
         print('Load dataset: {0:.2f} s'.format(time.time() - end))
 
