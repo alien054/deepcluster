@@ -20,13 +20,25 @@ import torch.optim
 import torch.utils.data
 import torchvision.transforms as transforms
 import torchvision.datasets as datasets
-import matplotlib as plt
+import matplotlib.pyplot as plt
 
 # import own class
 import clustering
 import models
 from util import AverageMeter, Logger, UnifLabelSampler
 
+
+def show_images(images, nmax=64):
+    fig, ax = plt.subplots(figsize=(8, 8))
+    ax.set_xticks([])
+    ax.set_yticks([])
+    ax.imshow(make_grid((images.detach()[:nmax]), nrow=8).permute(1, 2, 0))
+
+
+def show_batch(dl, nmax=64):
+    for images in dl:
+        show_images(images, nmax)
+        break
 
 def parse_args():
     parser = argparse.ArgumentParser(
@@ -149,15 +161,7 @@ def main(args):
                                              pin_memory=True)
 
     print("dataloader")
-    for i, batch in enumerate(dataloader, start=1):
-        image, label = batch
-        plt.subplots(10, 10, i)
-        plt.imshow(image.reshape(28, 28), cmap='gray')
-        plt.axis('off')
-        plt.title(dataloader.classes[label.item()], fontsize=28)
-        if (i >= 1):
-            break
-    plt.show()
+    
     # clustering algorithm to use
     deepcluster = clustering.__dict__[args.clustering](args.nmb_cluster)
 
