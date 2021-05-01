@@ -28,18 +28,6 @@ import models
 from util import AverageMeter, Logger, UnifLabelSampler
 
 
-def show_images(images, nmax=64):
-    fig, ax = plt.subplots(figsize=(8, 8))
-    ax.set_xticks([])
-    ax.set_yticks([])
-    ax.imshow(make_grid((images.detach()[:nmax]), nrow=8).permute(1, 2, 0))
-
-
-def show_batch(dl, nmax=64):
-    for images in dl:
-        show_images(images, nmax)
-        break
-
 def parse_args():
     parser = argparse.ArgumentParser(
         description='PyTorch Implementation of DeepCluster')
@@ -147,11 +135,6 @@ def main(args):
     dataset = datasets.ImageFolder(
         args.data, transform=transforms.Compose(tra))
 
-    print("dataset")
-    print(dataset)
-    print(len(dataset))
-    print(dataset[400])
-
     if args.verbose:
         print('Load dataset: {0:.2f} s'.format(time.time() - end))
 
@@ -160,8 +143,6 @@ def main(args):
                                              num_workers=args.workers,
                                              pin_memory=True)
 
-    print("dataloader")
-    
     # clustering algorithm to use
     deepcluster = clustering.__dict__[args.clustering](args.nmb_cluster)
 
@@ -171,6 +152,10 @@ def main(args):
 
         # remove head
         model.top_layer = None
+        print("classifier")
+        print(*list(model.classifier.children()))
+        print(*list(model.classifier.children()[:-1]))
+
         model.classifier = nn.Sequential(
             *list(model.classifier.children())[:-1])
 
@@ -327,6 +312,8 @@ def compute_features(dataloader, model, N):
     model.eval()
     # discard the label information in the dataloader
     for i, (input_tensor, _) in enumerate(dataloader):
+        print(i)
+        print(_)
         with torch.no_grad():
             input_var = torch.autograd.Variable(input_tensor.cuda())
             aux = model(input_var).data.cpu().numpy()
