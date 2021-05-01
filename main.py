@@ -154,7 +154,7 @@ def main(args):
         model.top_layer = None
         print("classifier")
         print(*list(model.classifier.children()))
-        print(*list(model.classifier.children()[:-1]))
+        print(*list(model.classifier.children())[:-1])
 
         model.classifier = nn.Sequential(
             *list(model.classifier.children())[:-1])
