@@ -138,7 +138,7 @@ def main(args):
     print("dataset")
     print(dataset)
     print(len(dataset))
-    print(dataset[0])
+    print(dataset[400])
 
     if args.verbose:
         print('Load dataset: {0:.2f} s'.format(time.time() - end))
@@ -149,7 +149,7 @@ def main(args):
                                              pin_memory=True)
 
     print("dataloader")
-    print(dataloader)
+    print(dataloader[0])
     # clustering algorithm to use
     deepcluster = clustering.__dict__[args.clustering](args.nmb_cluster)
 
