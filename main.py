@@ -137,6 +137,8 @@ def main(args):
 
     print("dataset")
     print(dataset)
+    print(len(dataset))
+    print(dataset[0])
 
     if args.verbose:
         print('Load dataset: {0:.2f} s'.format(time.time() - end))
@@ -145,8 +147,9 @@ def main(args):
                                              batch_size=args.batch,
                                              num_workers=args.workers,
                                              pin_memory=True)
-    print(f'dataloader shape: {dataloader.shape}')
 
+    print("dataloader")
+    print(dataloader)
     # clustering algorithm to use
     deepcluster = clustering.__dict__[args.clustering](args.nmb_cluster)
 
