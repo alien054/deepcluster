@@ -27,7 +27,8 @@ from util import AverageMeter, Logger, UnifLabelSampler
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description='PyTorch Implementation of DeepCluster')
+    parser = argparse.ArgumentParser(
+        description='PyTorch Implementation of DeepCluster')
 
     parser.add_argument('data', metavar='DIR', help='path to dataset')
     parser.add_argument('--arch', '-a', type=str, metavar='ARCH',
@@ -53,13 +54,16 @@ def parse_args():
                         help='manual epoch number (useful on restarts) (default: 0)')
     parser.add_argument('--batch', default=256, type=int,
                         help='mini-batch size (default: 256)')
-    parser.add_argument('--momentum', default=0.9, type=float, help='momentum (default: 0.9)')
+    parser.add_argument('--momentum', default=0.9,
+                        type=float, help='momentum (default: 0.9)')
     parser.add_argument('--resume', default='', type=str, metavar='PATH',
                         help='path to checkpoint (default: None)')
     parser.add_argument('--checkpoints', type=int, default=25000,
                         help='how many iterations between two checkpoints (default: 25000)')
-    parser.add_argument('--seed', type=int, default=31, help='random seed (default: 31)')
-    parser.add_argument('--exp', type=str, default='', help='path to exp folder')
+    parser.add_argument('--seed', type=int, default=31,
+                        help='random seed (default: 31)')
+    parser.add_argument('--exp', type=str, default='',
+                        help='path to exp folder')
     parser.add_argument('--verbose', action='store_true', help='chatty')
     return parser.parse_args()
 
@@ -126,7 +130,8 @@ def main(args):
 
     # load the data
     end = time.time()
-    dataset = datasets.ImageFolder(args.data, transform=transforms.Compose(tra))
+    dataset = datasets.ImageFolder(
+        args.data, transform=transforms.Compose(tra))
     if args.verbose:
         print('Load dataset: {0:.2f} s'.format(time.time() - end))
 
@@ -144,7 +149,8 @@ def main(args):
 
         # remove head
         model.top_layer = None
-        model.classifier = nn.Sequential(*list(model.classifier.children())[:-1])
+        model.classifier = nn.Sequential(
+            *list(model.classifier.children())[:-1])
 
         # get the features for the whole dataset
         features = compute_features(dataloader, model, len(dataset))
@@ -205,7 +211,7 @@ def main(args):
         torch.save({'epoch': epoch + 1,
                     'arch': args.arch,
                     'state_dict': model.state_dict(),
-                    'optimizer' : optimizer.state_dict()},
+                    'optimizer': optimizer.state_dict()},
                    os.path.join(args.exp, 'checkpoint.pth.tar'))
 
         # save cluster assignments
@@ -256,7 +262,7 @@ def train(loader, model, crit, opt, epoch):
                 'epoch': epoch + 1,
                 'arch': args.arch,
                 'state_dict': model.state_dict(),
-                'optimizer' : opt.state_dict()
+                'optimizer': opt.state_dict()
             }, path)
 
         target = target.cuda(non_blocking=True)
@@ -267,7 +273,7 @@ def train(loader, model, crit, opt, epoch):
         loss = crit(output, target_var)
 
         # record loss
-        losses.update(loss.data[0], input_tensor.size(0))
+        losses.update(loss.item(), input_tensor.size(0))
 
         # compute gradient and do SGD step
         opt.zero_grad()
@@ -289,6 +295,7 @@ def train(loader, model, crit, opt, epoch):
                           data_time=data_time, loss=losses))
 
     return losses.avg
+
 
 def compute_features(dataloader, model, N):
     if args.verbose:
