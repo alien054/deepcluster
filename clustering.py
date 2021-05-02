@@ -81,7 +81,8 @@ def preprocess_features(npdata, pca=256):
         pca (int): dim of output
     Returns:
         np.array of dim N * pca: data PCA-reduced, whitened and L2-normalized
-    """
+    """ 
+    print(f"PCA input shape: {npdata.shape}")
     _, ndim = npdata.shape
     npdata = npdata.astype('float32')
 
