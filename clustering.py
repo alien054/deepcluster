@@ -174,13 +174,15 @@ def run_kmeans(x, nmb_clusters, verbose=False):
     flat_config.useFloat16 = False
     flat_config.device = 0
     index = faiss.GpuIndexFlatL2(res, d, flat_config)
-    print(f'index {index}')
 
     # perform the training
     clus.train(x, index)
     centroids = clus.centroids
     centroids_vect = faiss.vector_to_array(centroids)
+    centroids_vect = centroids_vect.reshape(nmb_clusters, d)
+
     print(f'centrooids : {centroids_vect.shape}')
+    print(f'c1: {centroids_vect[0]}')
 
     _, I = index.search(x, 1)
 
