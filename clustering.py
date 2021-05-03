@@ -59,7 +59,7 @@ class ReassignedDataset(data.Dataset):
             is_true_label = False
             pseudolabel = label_to_idx[pseudolabels[j]]
 
-            if first_epoch:
+            if not first_epoch:
                 is_true_label = dataset[idx][2]
 
             if is_true_label:
@@ -158,7 +158,7 @@ def cluster_assign(images_lists, dataset, first_epoch=False):
                             transforms.RandomHorizontalFlip(),
                             transforms.ToTensor(),
                             normalize])
-
+    
     return ReassignedDataset(image_indexes, pseudolabels, dataset, t, first_epoch)
 
 
