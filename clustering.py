@@ -81,7 +81,7 @@ def preprocess_features(npdata, pca=256):
         pca (int): dim of output
     Returns:
         np.array of dim N * pca: data PCA-reduced, whitened and L2-normalized
-    """ 
+    """
     print(f"PCA input shape: {npdata.shape}")
     _, ndim = npdata.shape
     npdata = npdata.astype('float32')
@@ -182,11 +182,12 @@ def run_kmeans(x, nmb_clusters, verbose=False):
     centroids_vect = faiss.vector_to_array(centroids)
     centroids_vect = centroids_vect.reshape(nmb_clusters, d)
 
-    print(f'centrooids : {centroids_vect.shape}')
-    print(f'c1: {centroids_vect[0]}')
+    # print(f'centrooids : {centroids_vect.shape}')
+    # print(f'c1: {centroids_vect[0]}')
 
-    _, I = index.search(x, 1)
-
+    D, I = index.search(x, 1)
+    print(f'd: {D}')
+    print(f'i: {I}')
     # losses = faiss.vector_to_array(clus.obj)
 
     stats = clus.iteration_stats
