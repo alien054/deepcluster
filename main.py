@@ -185,6 +185,7 @@ def main(args):
         train_dataset = clustering.cluster_assign(deepcluster.images_lists,
                                                   dataset.imgs,epoch==0)
 
+        dataset = train_dataset
         # uniformly sample per target
         sampler = UnifLabelSampler(int(args.reassign * len(train_dataset)),
                                    deepcluster.images_lists)
