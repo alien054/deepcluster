@@ -223,6 +223,7 @@ def get_max_distance_points(distance_lists, nmb_datapoints):
 
         data_point = data[max_idx]
         data_list.append(data_point)
+    return data_list
 
 
 class Kmeans(object):
