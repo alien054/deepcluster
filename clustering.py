@@ -223,6 +223,7 @@ def get_max_distance_points(distance_lists, nmb_datapoints):
             data = np.array(data_num)
 
             max_idx = np.argsort(dist)[-nmb_datapoints:]
+            max_idx = np.flip(max_idx)
             print(f"dis sort: {dist[max_idx]}")
             print(f"data sort: {data[max_idx]}")
             i = 1
