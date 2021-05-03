@@ -212,7 +212,6 @@ def arrange_clustering(images_lists):
 
 
 def get_max_distance_points(distance_lists, nmb_datapoints):
-    print("here")
     i = 0
     for d_list in distance_lists:
         if i == 0:
