@@ -222,7 +222,7 @@ def get_max_distance_points(distance_lists, nmb_datapoints):
         max_idx = np.flip(max_idx)
 
         data_point = data[max_idx]
-        data_list.append(data_point.tolist())
+        data_list.extend(data_point.tolist())
     
     return data_list
 
@@ -251,8 +251,8 @@ class Kmeans(object):
             self.images_lists[I[i]].append(i)
             self.distance_lists[I[i]].append([D[i], i])
 
-        print("d list 0")
-        print(self.distance_lists[0])
+        # print("d list 0")
+        # print(self.distance_lists[0])
 
         if verbose:
             print('k-means time: {0:.0f} s'.format(time.time() - end))

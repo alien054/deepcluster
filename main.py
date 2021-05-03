@@ -135,6 +135,8 @@ def main(args):
     dataset = datasets.ImageFolder(
         args.data, transform=transforms.Compose(tra))
 
+    print(dataset.img_labels)
+
     if args.verbose:
         print('Load dataset: {0:.2f} s'.format(time.time() - end))
 
@@ -171,16 +173,17 @@ def main(args):
             print('Cluster the features')
         clustering_loss = deepcluster.cluster(features, verbose=args.verbose)
 
+        print('getting max distance points')
+        max_distance_points = clustering.get_max_distance_points(
+            deepcluster.distance_lists, 3)
+        print(max_distance_points)
+
         # assign pseudo-labels
         if args.verbose:
             print('Assign pseudo labels')
         train_dataset = clustering.cluster_assign(deepcluster.images_lists,
                                                   dataset.imgs)
 
-        print('getting max distance points')
-        max_distance_points = clustering.get_max_distance_points(
-            deepcluster.distance_lists, 3)
-        print(max_distance_points)
         # uniformly sample per target
         sampler = UnifLabelSampler(int(args.reassign * len(train_dataset)),
                                    deepcluster.images_lists)
