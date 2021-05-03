@@ -37,7 +37,7 @@ class ReassignedDataset(data.Dataset):
     Args:
         image_indexes (list): list of data indexes
         pseudolabels (list): list of labels for each data
-        dataset (list): list of tuples with paths to images
+        dataset (list): list of tuples with (paths to images,label)
         transform (callable, optional): a function/transform that takes in
                                         an PIL image and returns a
                                         transformed version
@@ -50,6 +50,7 @@ class ReassignedDataset(data.Dataset):
     def make_dataset(self, image_indexes, pseudolabels, dataset):
         label_to_idx = {label: idx for idx,
                         label in enumerate(set(pseudolabels))}
+        print(f"l2idx: {label_to_idx}")
         images = []
         for j, idx in enumerate(image_indexes):
             path = dataset[idx][0]
