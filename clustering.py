@@ -48,7 +48,7 @@ class ReassignedDataset(data.Dataset):
             image_indexes, pseudolabels, dataset, first_epoch)
         self.transform = transform
 
-    def make_dataset(self, image_indexes, pseudolabels, dataset):
+    def make_dataset(self, image_indexes, pseudolabels, dataset, first_epoch):
         label_to_idx = {label: idx for idx,
                         label in enumerate(set(pseudolabels))}
         print(f"l2idx: {label_to_idx}")
