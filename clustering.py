@@ -216,17 +216,17 @@ def get_max_distance_points(distance_lists, nmb_datapoints):
     i = 0
     for d_list in distance_lists:
         if i == 0:
-            print(d_list)
-            distance = d_list[:][0]
-            print(f"dis: {distance}")
-            data_num = d_list[:][1]
-            print(f"data_num: {data_num}")
-            dist = np.array(distance)
-            data = np.array(data_num)
+            print(d_list[0][:])
+            # distance = d_list[:][0]
+            # print(f"dis: {distance}")
+            # data_num = d_list[:][1]
+            # print(f"data_num: {data_num}")
+            # dist = np.array(distance)
+            # data = np.array(data_num)
 
-            max_idx = np.argsort(dist)[:nmb_datapoints]
-            print(f"dis sort: {dist[max_idx]}")
-            print(f"data sort: {data[max_idx]}")
+            # max_idx = np.argsort(dist)[:nmb_datapoints]
+            # print(f"dis sort: {dist[max_idx]}")
+            # print(f"data sort: {data[max_idx]}")
             i = 1
 
 
