@@ -43,9 +43,10 @@ class ReassignedDataset(data.Dataset):
                                         transformed version
     """
 
-    def __init__(self, image_indexes, pseudolabels, dataset, transform=None):
+    def __init__(self, image_indexes, pseudolabels, dataset, transform=None,first_epoch=False):
         self.imgs = self.make_dataset(image_indexes, pseudolabels, dataset)
         self.transform = transform
+        self.first_epoch = first_epoch
 
     def make_dataset(self, image_indexes, pseudolabels, dataset):
         label_to_idx = {label: idx for idx,
@@ -54,8 +55,20 @@ class ReassignedDataset(data.Dataset):
         images = []
         for j, idx in enumerate(image_indexes):
             path = dataset[idx][0]
+            true_label = dataset[idx][1]
+            is_true_label = False
             pseudolabel = label_to_idx[pseudolabels[j]]
-            images.append((path, pseudolabel))
+            
+            if self.first_epoch:
+                is_true_label = dataset[idx][2]
+            
+            if is_true_label:
+                label = true_label
+            else:
+                label = pseudolabel
+                
+            
+            images.append((path, label,is_true_label))
         return images
 
     def __getitem__(self, index):
@@ -123,7 +136,7 @@ def make_graph(xb, nnn):
     return I, D
 
 
-def cluster_assign(images_lists, dataset):
+def cluster_assign(images_lists, dataset,first_epoch=False):
     """Creates a dataset from clustering, with clusters as labels.
     Args:
         images_lists (list of list): for each cluster, the list of image indexes
@@ -147,7 +160,7 @@ def cluster_assign(images_lists, dataset):
                             transforms.ToTensor(),
                             normalize])
 
-    return ReassignedDataset(image_indexes, pseudolabels, dataset, t)
+    return ReassignedDataset(image_indexes, pseudolabels, dataset, t,first_epoch)
 
 
 def run_kmeans(x, nmb_clusters, verbose=False):
