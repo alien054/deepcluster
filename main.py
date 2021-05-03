@@ -67,6 +67,8 @@ def parse_args():
     parser.add_argument('--exp', type=str, default='',
                         help='path to exp folder')
     parser.add_argument('--verbose', action='store_true', help='chatty')
+    parser.add_argument('--points_to_annotate', type=int, default=100,
+                        help='number of datapoints pick for labeling  (default: 100)')
     return parser.parse_args()
 
 
@@ -176,7 +178,7 @@ def main(args):
 
         print('getting max distance points')
         max_distance_points = clustering.get_max_distance_points(
-            deepcluster.distance_lists, 3)
+            deepcluster.distance_lists, args.points_to_annotate)
         print(max_distance_points)
 
         # assign pseudo-labels
