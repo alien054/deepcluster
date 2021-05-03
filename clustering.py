@@ -76,8 +76,11 @@ class ReassignedDataset(data.Dataset):
             index (int): index of data
         Returns:
             tuple: (image, pseudolabel) where pseudolabel is the cluster of index datapoint
+            changed to
+            tuple: (image, pseudolabel,is_true_label) where pseudolabel is the cluster of index datapoint
+            
         """
-        path, pseudolabel = self.imgs[index]
+        path, pseudolabel,_ = self.imgs[index]
         img = pil_loader(path)
         if self.transform is not None:
             img = self.transform(img)
