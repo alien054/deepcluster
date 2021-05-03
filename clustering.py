@@ -222,7 +222,8 @@ def get_max_distance_points(distance_lists, nmb_datapoints):
         max_idx = np.flip(max_idx)
 
         data_point = data[max_idx]
-        data_list.append(data_point)
+        data_list.append(data_point.tolist())
+    
     return data_list
 
 
