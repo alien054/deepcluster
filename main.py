@@ -156,10 +156,10 @@ def main(args):
         print("classifier")
         print(*list(model.classifier.children())[:-1])
         print(*list(model.classifier.children()))
-        
+
         # removes the last relu unit
         # why only relu? cause model uses cross entropy loss so, last layer only outuputs the activation
-        # loss function itself calculates both softmax and NLLL 
+        # loss function itself calculates both softmax and NLLL
         model.classifier = nn.Sequential(
             *list(model.classifier.children())[:-1])
 
@@ -178,7 +178,9 @@ def main(args):
                                                   dataset.imgs)
 
         print('getting max distance points')
-        clustering.get_max_distance_points(deepcluster.distance_lists,3)
+        max_distance_points = clustering.get_max_distance_points(
+            deepcluster.distance_lists, 3)
+        print(max_distance_points)
         # uniformly sample per target
         sampler = UnifLabelSampler(int(args.reassign * len(train_dataset)),
                                    deepcluster.images_lists)

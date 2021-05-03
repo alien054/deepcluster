@@ -186,8 +186,6 @@ def run_kmeans(x, nmb_clusters, verbose=False):
     # print(f'c1: {centroids_vect[0]}')
 
     D, I = index.search(x, 1)
-    print(f'd: {D[:30]}')
-    print(f'i: {I[:30]}')
     # losses = faiss.vector_to_array(clus.obj)
 
     stats = clus.iteration_stats
@@ -212,21 +210,19 @@ def arrange_clustering(images_lists):
 
 
 def get_max_distance_points(distance_lists, nmb_datapoints):
-    i = 0
+    data_list = []
     for d_list in distance_lists:
-        if i == 0:
-            distance = [d[0] for d in d_list]
-            print(f"dis: {distance}")
-            data_num = [d[1] for d in d_list]
-            print(f"data_num: {data_num}")
-            dist = np.array(distance)
-            data = np.array(data_num)
+        distance = [d[0] for d in d_list]
+        data_idx = [d[1] for d in d_list]
 
-            max_idx = np.argsort(dist)[-nmb_datapoints:]
-            max_idx = np.flip(max_idx)
-            print(f"dis sort: {dist[max_idx]}")
-            print(f"data sort: {data[max_idx]}")
-            i = 1
+        dist = np.array(distance)
+        data = np.array(data_idx)
+
+        max_idx = np.argsort(dist)[-nmb_datapoints:]
+        max_idx = np.flip(max_idx)
+
+        data_point = data[max_idx]
+        data_list.append(data_point)
 
 
 class Kmeans(object):
