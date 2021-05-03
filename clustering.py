@@ -211,6 +211,21 @@ def arrange_clustering(images_lists):
     return np.asarray(pseudolabels)[indexes]
 
 
+def get_max_distance_points(distance_lists, nmb_datapoints):
+    for d_list in distance_lists:
+        if d_list == 0:
+            distance = d_list[:][0]
+            print("dis: {distance}")
+            data_num = d_list[:][1]
+            print("data_num: {data_num}")
+            dist = np.array(distance)
+            data = np.array(data_num)
+
+            max_idx = np.argsort(dist)[:, nmb_datapoints]
+            print("dis sort: {dist[max_idx]}")
+            print("data sort: {data[max_idx]}")
+
+
 class Kmeans(object):
     def __init__(self, k):
         self.k = k

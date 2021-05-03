@@ -177,6 +177,8 @@ def main(args):
         train_dataset = clustering.cluster_assign(deepcluster.images_lists,
                                                   dataset.imgs)
 
+        print('getting max distance points')
+        clustering.get_max_distance_points(deepcluster.distance_lists,3)
         # uniformly sample per target
         sampler = UnifLabelSampler(int(args.reassign * len(train_dataset)),
                                    deepcluster.images_lists)
