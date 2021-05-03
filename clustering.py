@@ -216,6 +216,7 @@ def get_max_distance_points(distance_lists, nmb_datapoints):
     i = 0
     for d_list in distance_lists:
         if i == 0:
+            print(d_list)
             distance = d_list[:][0]
             print(f"dis: {distance}")
             data_num = d_list[:][1]
