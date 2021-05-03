@@ -43,10 +43,10 @@ class ReassignedDataset(data.Dataset):
                                         transformed version
     """
 
-    def __init__(self, image_indexes, pseudolabels, dataset, transform=None,first_epoch=False):
-        self.imgs = self.make_dataset(image_indexes, pseudolabels, dataset)
+    def __init__(self, image_indexes, pseudolabels, dataset, transform=None, first_epoch=False):
+        self.imgs = self.make_dataset(
+            image_indexes, pseudolabels, dataset, first_epoch)
         self.transform = transform
-        self.first_epoch = first_epoch
 
     def make_dataset(self, image_indexes, pseudolabels, dataset):
         label_to_idx = {label: idx for idx,
@@ -58,17 +58,16 @@ class ReassignedDataset(data.Dataset):
             true_label = dataset[idx][1]
             is_true_label = False
             pseudolabel = label_to_idx[pseudolabels[j]]
-            
-            if self.first_epoch:
+
+            if first_epoch:
                 is_true_label = dataset[idx][2]
-            
+
             if is_true_label:
                 label = true_label
             else:
                 label = pseudolabel
-                
-            
-            images.append((path, label,is_true_label))
+
+            images.append((path, label, is_true_label))
         return images
 
     def __getitem__(self, index):
@@ -136,7 +135,7 @@ def make_graph(xb, nnn):
     return I, D
 
 
-def cluster_assign(images_lists, dataset,first_epoch=False):
+def cluster_assign(images_lists, dataset, first_epoch=False):
     """Creates a dataset from clustering, with clusters as labels.
     Args:
         images_lists (list of list): for each cluster, the list of image indexes
@@ -160,7 +159,7 @@ def cluster_assign(images_lists, dataset,first_epoch=False):
                             transforms.ToTensor(),
                             normalize])
 
-    return ReassignedDataset(image_indexes, pseudolabels, dataset, t,first_epoch)
+    return ReassignedDataset(image_indexes, pseudolabels, dataset, t, first_epoch)
 
 
 def run_kmeans(x, nmb_clusters, verbose=False):
@@ -237,7 +236,7 @@ def get_max_distance_points(distance_lists, nmb_datapoints):
 
         data_point = data[max_idx]
         data_list.extend(data_point.tolist())
-    
+
     return data_list
 
 
