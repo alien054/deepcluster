@@ -254,9 +254,8 @@ class Kmeans(object):
             self.distance_lists[I[i]].append([D[i], i])
 
         print("d list 0")
-        print(self.distance_lists[0][:15])
-        print("d list 7")
-        print(self.distance_lists[7][:15])
+        print(self.distance_lists[0])
+
         if verbose:
             print('k-means time: {0:.0f} s'.format(time.time() - end))
 
