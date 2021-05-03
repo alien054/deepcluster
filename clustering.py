@@ -228,7 +228,9 @@ class Kmeans(object):
         # cluster the data
         # run_kmeans Returns (list: ids of data in each cluster, float: loss value)
         I, loss, D = run_kmeans(xb, self.k, verbose)
-        self.images_lists = [[] for i in range(self.k)]
+        self.images_lists   = [[] for i in range(self.k)]
+        self.distance_lists = [[] for i in range(self.k)]
+        
         for i in range(len(data)):
             self.images_lists[I[i]].append(i)
             self.distance_lists[I[i]].append([D[i], i])
