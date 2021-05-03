@@ -43,12 +43,12 @@ class ReassignedDataset(data.Dataset):
                                         transformed version
     """
 
-    def __init__(self, image_indexes, pseudolabels, dataset, transform=None, first_epoch=False):
+    def __init__(self, image_indexes, pseudolabels, dataset, transform=None,datapoints_to_annotate=None,first_epoch=False):
         self.imgs = self.make_dataset(
-            image_indexes, pseudolabels, dataset, first_epoch)
+            image_indexes, pseudolabels, dataset, datapoints_to_annotate,first_epoch)
         self.transform = transform
 
-    def make_dataset(self, image_indexes, pseudolabels, dataset, first_epoch):
+    def make_dataset(self, image_indexes, pseudolabels, dataset,datapoints_to_annotate,first_epoch):
         label_to_idx = {label: idx for idx,
                         label in enumerate(set(pseudolabels))}
         print(f"l2idx: {label_to_idx}")
@@ -64,6 +64,9 @@ class ReassignedDataset(data.Dataset):
 
             if is_true_label:
                 label = true_label
+            elif idx in datapoints_to_annotate:
+                label = true_label
+                is_true_label = True
             else:
                 label = pseudolabel
 
@@ -138,7 +141,7 @@ def make_graph(xb, nnn):
     return I, D
 
 
-def cluster_assign(images_lists, dataset, first_epoch=False):
+def cluster_assign(images_lists, dataset, datapoints_to_annotate,first_epoch=False):
     """Creates a dataset from clustering, with clusters as labels.
     Args:
         images_lists (list of list): for each cluster, the list of image indexes
@@ -151,10 +154,14 @@ def cluster_assign(images_lists, dataset, first_epoch=False):
     assert images_lists is not None
     pseudolabels = []
     image_indexes = []
+    assign_true = []
     for cluster, images in enumerate(images_lists):
         image_indexes.extend(images)
         pseudolabels.extend([cluster] * len(images))
 
+    for datapoint in datapoints_to_annotate:
+        assign_true.extend(datapoint)
+        
     normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                      std=[0.229, 0.224, 0.225])
     t = transforms.Compose([transforms.RandomResizedCrop(224),
@@ -162,7 +169,7 @@ def cluster_assign(images_lists, dataset, first_epoch=False):
                             transforms.ToTensor(),
                             normalize])
     
-    return ReassignedDataset(image_indexes, pseudolabels, dataset, t, first_epoch)
+    return ReassignedDataset(image_indexes, pseudolabels, dataset, t, assign_true,first_epoch)
 
 
 def run_kmeans(x, nmb_clusters, verbose=False):
@@ -238,7 +245,7 @@ def get_max_distance_points(distance_lists, nmb_datapoints):
         max_idx = np.flip(max_idx)
 
         data_point = data[max_idx]
-        data_list.extend(data_point.tolist())
+        data_list.append(data_point.tolist())
 
     return data_list
 

@@ -183,7 +183,7 @@ def main(args):
         if args.verbose:
             print('Assign pseudo labels')
         train_dataset = clustering.cluster_assign(deepcluster.images_lists,
-                                                  dataset.imgs,epoch==0)
+                                                  dataset.imgs,datapoints_to_annotate=max_distance_points,epoch==0)
 
         dataset = train_dataset
         # uniformly sample per target
