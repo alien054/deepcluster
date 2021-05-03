@@ -186,8 +186,8 @@ def run_kmeans(x, nmb_clusters, verbose=False):
     # print(f'c1: {centroids_vect[0]}')
 
     D, I = index.search(x, 1)
-    print(f'd: {D}')
-    print(f'i: {I}')
+    print(f'd: {D[:15]}')
+    print(f'i: {I[:15]}')
     # losses = faiss.vector_to_array(clus.obj)
 
     stats = clus.iteration_stats
@@ -198,7 +198,7 @@ def run_kmeans(x, nmb_clusters, verbose=False):
     if verbose:
         print('k-means loss evolution: {0}'.format(losses))
 
-    return [int(n[0]) for n in I], losses[-1]
+    return [int(n[0]) for n in I], losses[-1], [int(d[0]) for d in D]
 
 
 def arrange_clustering(images_lists):
@@ -227,11 +227,13 @@ class Kmeans(object):
 
         # cluster the data
         # run_kmeans Returns (list: ids of data in each cluster, float: loss value)
-        I, loss = run_kmeans(xb, self.k, verbose)
+        I, loss, D = run_kmeans(xb, self.k, verbose)
         self.images_lists = [[] for i in range(self.k)]
         for i in range(len(data)):
             self.images_lists[I[i]].append(i)
+            self.distance_lists[I[i]].append([D[i], i])
 
+        print(self.distance_lists[:15])
         if verbose:
             print('k-means time: {0:.0f} s'.format(time.time() - end))
 
