@@ -135,7 +135,7 @@ def main(args):
     dataset = datasets.ImageFolder(
         args.data, transform=transforms.Compose(tra))
 
-    print(dataset.img)
+    print(dataset.imgs)
 
     if args.verbose:
         print('Load dataset: {0:.2f} s'.format(time.time() - end))
