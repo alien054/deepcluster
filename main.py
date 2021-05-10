@@ -320,24 +320,8 @@ def train(loader, model, crit, opt, epoch, testloader):
         batch_time.update(time.time() - end)
         end = time.time()
 
-        correct = 0
-        total = 0
-        # since we're not training, we don't need to calculate the gradients for our outputs
-        with torch.no_grad():
-            for data in testloader:
-                images, labels = data
-                images = images.cuda()
-                labels = labels.cuda()
-                # calculate outputs by running images through the network
-                outputs = model(images)
-                # the class with the highest energy is what we choose as prediction
-                _, predicted = torch.max(outputs.data, 1)
-                total += labels.size(0)
-                correct += (predicted == labels).sum().item()
-
-        print('Accuracy of the network on the 10000 test images: %d %%' % (
-            100 * correct / total))
-        if args.verbose and (i % 200) == 0:
+        
+        if args.verbose: #and (i % 200) == 0:
             print('Epoch: [{0}][{1}/{2}]\t'
                   'Time: {batch_time.val:.3f} ({batch_time.avg:.3f})\t'
                   'Data: {data_time.val:.3f} ({data_time.avg:.3f})\t'
@@ -345,6 +329,23 @@ def train(loader, model, crit, opt, epoch, testloader):
                   .format(epoch, i, len(loader), batch_time=batch_time,
                           data_time=data_time, loss=losses))
 
+    correct = 0
+    total = 0
+    # since we're not training, we don't need to calculate the gradients for our outputs
+    with torch.no_grad():
+        for data in testloader:
+            images, labels = data
+            images = images.cuda()
+            labels = labels.cuda()
+            # calculate outputs by running images through the network
+            outputs = model(images)
+            # the class with the highest energy is what we choose as prediction
+            _, predicted = torch.max(outputs.data, 1)
+            total += labels.size(0)
+            correct += (predicted == labels).sum().item()
+
+    print('Accuracy of the network on the 10000 test images: %d %%' % (
+        100 * correct / total))
     return losses.avg
 
 
