@@ -164,7 +164,8 @@ def cluster_assign(images_lists, dataset, datapoints_to_annotate,first_epoch=Fal
         
     normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                      std=[0.229, 0.224, 0.225])
-    t = transforms.Compose([transforms.RandomResizedCrop(224),
+    t = transforms.Compose([transforms.Resize(224,224),
+                            transforms.RandomResizedCrop(224),
                             transforms.RandomHorizontalFlip(),
                             transforms.ToTensor(),
                             normalize])

@@ -33,6 +33,7 @@ def parse_args():
         description='PyTorch Implementation of DeepCluster')
 
     parser.add_argument('data', metavar='DIR', help='path to dataset')
+    parser.add_argument('test_data',metavar='TestDir')
     parser.add_argument('--arch', '-a', type=str, metavar='ARCH',
                         choices=['alexnet', 'vgg16'], default='alexnet',
                         help='CNN architecture (default: alexnet)')
@@ -134,8 +135,13 @@ def main(args):
 
     # load the data
     end = time.time()
+    print(f'Train data: {args.data}')
     dataset = datasets.ImageFolder(
         args.data, transform=transforms.Compose(tra))
+    
+    print(f'Test data: {args.test_data}')
+    testset = datasets.ImageFolder(
+        args.test_data, transform=transforms.Compose(tra))
 
     # for d in dataset.imgs:
     #     print(d)
@@ -144,6 +150,11 @@ def main(args):
         print('Load dataset: {0:.2f} s'.format(time.time() - end))
 
     dataloader = torch.utils.data.DataLoader(dataset,
+                                             batch_size=args.batch,
+                                             num_workers=args.workers,
+                                             pin_memory=True)
+    
+    testloader = torch.utils.data.DataLoader(testset,
                                              batch_size=args.batch,
                                              num_workers=args.workers,
                                              pin_memory=True)
@@ -185,7 +196,7 @@ def main(args):
         if args.verbose:
             print('Assign pseudo labels')
         train_dataset = clustering.cluster_assign(deepcluster.images_lists,
-                                                  dataset.imgs,max_distance_points,epoch==0)
+                                                  dataset.imgs, max_distance_points, epoch == 0)
 
         dataset = train_dataset
         # uniformly sample per target
@@ -211,7 +222,8 @@ def main(args):
 
         # train network with clusters as pseudo-labels
         end = time.time()
-        loss = train(train_dataloader, model, criterion, optimizer, epoch)
+        loss = train(train_dataloader, model, criterion,
+                     optimizer, epoch, testloader)
 
         # print log
         if args.verbose:
@@ -240,7 +252,7 @@ def main(args):
         cluster_log.log(deepcluster.images_lists)
 
 
-def train(loader, model, crit, opt, epoch):
+def train(loader, model, crit, opt, epoch, testloader):
     """Training of the CNN.
         Args:
             loader (torch.utils.data.DataLoader): Data loader
@@ -308,6 +320,21 @@ def train(loader, model, crit, opt, epoch):
         batch_time.update(time.time() - end)
         end = time.time()
 
+        correct = 0
+        total = 0
+        # since we're not training, we don't need to calculate the gradients for our outputs
+        with torch.no_grad():
+            for data in testloader:
+                images, labels = data
+                # calculate outputs by running images through the network
+                outputs = model(images)
+                # the class with the highest energy is what we choose as prediction
+                _, predicted = torch.max(outputs.data, 1)
+                total += labels.size(0)
+                correct += (predicted == labels).sum().item()
+
+        print('Accuracy of the network on the 10000 test images: %d %%' % (
+            100 * correct / total))
         if args.verbose and (i % 200) == 0:
             print('Epoch: [{0}][{1}/{2}]\t'
                   'Time: {batch_time.val:.3f} ({batch_time.avg:.3f})\t'
