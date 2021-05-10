@@ -326,6 +326,8 @@ def train(loader, model, crit, opt, epoch, testloader):
         with torch.no_grad():
             for data in testloader:
                 images, labels = data
+                images = images.cuda()
+                labels = labels.cuda()
                 # calculate outputs by running images through the network
                 outputs = model(images)
                 # the class with the highest energy is what we choose as prediction
