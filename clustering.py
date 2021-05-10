@@ -43,12 +43,12 @@ class ReassignedDataset(data.Dataset):
                                         transformed version
     """
 
-    def __init__(self, image_indexes, pseudolabels, dataset, transform=None,datapoints_to_annotate=None,first_epoch=False):
+    def __init__(self, image_indexes, pseudolabels, dataset, transform=None, datapoints_to_annotate=None, first_epoch=False):
         self.imgs = self.make_dataset(
-            image_indexes, pseudolabels, dataset, datapoints_to_annotate,first_epoch)
+            image_indexes, pseudolabels, dataset, datapoints_to_annotate, first_epoch)
         self.transform = transform
 
-    def make_dataset(self, image_indexes, pseudolabels, dataset,datapoints_to_annotate,first_epoch):
+    def make_dataset(self, image_indexes, pseudolabels, dataset, datapoints_to_annotate, first_epoch):
         label_to_idx = {label: idx for idx,
                         label in enumerate(set(pseudolabels))}
         print(f"l2idx: {label_to_idx}")
@@ -81,9 +81,9 @@ class ReassignedDataset(data.Dataset):
             tuple: (image, pseudolabel) where pseudolabel is the cluster of index datapoint
             changed to
             tuple: (image, pseudolabel,is_true_label) where pseudolabel is the cluster of index datapoint
-            
+
         """
-        path, pseudolabel,_ = self.imgs[index]
+        path, pseudolabel, _ = self.imgs[index]
         img = pil_loader(path)
         if self.transform is not None:
             img = self.transform(img)
@@ -141,7 +141,7 @@ def make_graph(xb, nnn):
     return I, D
 
 
-def cluster_assign(images_lists, dataset, datapoints_to_annotate,first_epoch=False):
+def cluster_assign(images_lists, dataset, datapoints_to_annotate, first_epoch=False):
     """Creates a dataset from clustering, with clusters as labels.
     Args:
         images_lists (list of list): for each cluster, the list of image indexes
@@ -161,17 +161,17 @@ def cluster_assign(images_lists, dataset, datapoints_to_annotate,first_epoch=Fal
 
     for datapoint in datapoints_to_annotate:
         assign_true.extend(datapoint)
-        
+
     normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                      std=[0.229, 0.224, 0.225])
     t = transforms.Compose([
-                            # transforms.Resize(224,224),
-                            transforms.RandomResizedCrop(224),
-                            transforms.RandomHorizontalFlip(),
-                            transforms.ToTensor(),
-                            normalize])
-    
-    return ReassignedDataset(image_indexes, pseudolabels, dataset, t, assign_true,first_epoch)
+        transforms.Resize(224),
+        transforms.RandomResizedCrop(224),
+        transforms.RandomHorizontalFlip(),
+        transforms.ToTensor(),
+        normalize])
+
+    return ReassignedDataset(image_indexes, pseudolabels, dataset, t, assign_true, first_epoch)
 
 
 def run_kmeans(x, nmb_clusters, verbose=False):
